@@ -5,7 +5,6 @@ from login import authenticate, identity
 from resources.userRegister import user_register
 from resources.item import all_items, Item, sameitems, storeitems
 from resources.store import all_stores, create_store
-from datetime import timedelta
 from db import db
 
 App = Flask(__name__)
@@ -21,7 +20,6 @@ def create_table():
 
 
 App.config["JWT_AUTH_URL_RULE"] = '/login'
-App.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
 jwt = JWT(App, authenticate, identity)
 
 
