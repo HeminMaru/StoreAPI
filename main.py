@@ -6,15 +6,24 @@ from resources.userRegister import user_register
 from resources.item import all_items, Item, sameitems, storeitems
 from resources.store import all_stores, create_store
 from datetime import timedelta
-
+from db import db
 
 App = Flask(__name__)
+App.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+App.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 App.secret_key = "Hemin"
 api = Api(App)
+
+
+@App.before_first_request
+def create_table():
+    db.create_all()
+
 
 App.config["JWT_AUTH_URL_RULE"] = '/login'
 App.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
 jwt = JWT(App, authenticate, identity)
+
 
 # user registration
 api.add_resource(user_register, '/register')
@@ -29,4 +38,6 @@ api.add_resource(Item, '/stores/<string:storeName>/items/<string:itemName>')
 api.add_resource(all_items, '/items')
 api.add_resource(sameitems, '/items/<string:itemName>')
 
-App.run()
+if __name__ == '__main__':
+    db.init_app(App)
+    App.run()

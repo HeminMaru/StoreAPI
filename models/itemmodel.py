@@ -1,34 +1,37 @@
-import sqlite3
 from flask import jsonify
+from db import db
+from models.storemodel import storeModel
 
 
-class itemModel:
-    def __init__(self, itemName, storeName):
-        self.itemName = itemName
+class itemModel(db.Model):
+    __tablename__ = 'items'
+
+    item_id = db.Column(db.Integer, primary_key=True)
+    storeName = db.Column(db.String(20))
+    itemName = db.Column(db.String(100))
+    price = db.Column(db.Float(precision=2))
+
+    def __init__(self, storeName, itemName, price):
         self.storeName = storeName
+        self.itemName = itemName
+        self.price = price
 
     def json(self):
-        return jsonify({"storeName": self.storeName, "itemName": self.itemName})
+        return jsonify({"item_id": self.item_id, "storeName": self.storeName, "itemName": self.itemName, "price": self.price})
 
     @classmethod
     def find_item_by_name(cls, storeName, itemName):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        result = cursor.execute("SELECT * FROM items WHERE storeName=? and itemName=?", (storeName, itemName))
-        row = result.fetchone()
-        connection.close()
-        if row:
-            return jsonify({"Item": {"item_id": row[0], "storeName": row[1], "itemName": row[2], "price": row[3]}})
-        return
+        return cls.query.filter_by(storeName=storeName, itemName=itemName).first()
 
     @classmethod
     def find_store_by_name(cls, storeName):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        result = cursor.execute("SELECT * FROM stores WHERE storeName=?", (storeName,))
-        row = result.fetchone()
-        connection.close()
-        if row:
-            return jsonify({"Store": {"store_id": row[0], "ownerName": row[1], "storeName": row[2]}})
-        return
+        return storeModel.query.filter_by(storeName=storeName).first()
+
+    def insert_or_update_from_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
 
