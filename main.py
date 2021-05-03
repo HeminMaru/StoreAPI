@@ -35,7 +35,7 @@ api.add_resource(storeitems, '/stores/<string:storeName>/items')
 api.add_resource(Item, '/stores/<string:storeName>/items/<string:itemName>')
 api.add_resource(all_items, '/items')
 api.add_resource(sameitems, '/items/<string:itemName>')
-
+db.init_app(App)
 if __name__ == '__main__':
-    db.init_app(App)
+
     App.run()
