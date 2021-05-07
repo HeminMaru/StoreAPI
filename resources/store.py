@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_restful import Resource
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from models.usermodel import userModel
 from models.storemodel import storeModel
 from models.itemmodel import itemModel
